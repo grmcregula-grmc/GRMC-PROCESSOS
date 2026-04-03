@@ -788,7 +788,8 @@ function ExtratorAppContent() {
       // Upload files to Storage
       const fileUrls: string[] = [];
       for (const file of fileData.files) {
-        const filePath = `documents/${user.id}/${extractionId}/${file.name}`;
+        const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const filePath = `documents/${user.id}/${extractionId}/${sanitizedFilename}`;
         const { error: uploadError } = await supabase.storage
           .from('documents')
           .upload(filePath, file);
