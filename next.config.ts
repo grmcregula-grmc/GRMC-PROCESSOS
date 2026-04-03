@@ -1,6 +1,7 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  outputFileTracing: false,
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
