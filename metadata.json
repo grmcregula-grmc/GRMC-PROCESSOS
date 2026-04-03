@@ -1,0 +1,5 @@
+{
+  "name": "GRMC Doc Extract",
+  "description": "Ferramenta de extração e gestão de dados de processos para a Gerência de Regulação e Monitoramento Contratual (GRMC) da DESO, com relatórios PDF e visualização de dados.",
+  "requestFramePermissions": []
+}
