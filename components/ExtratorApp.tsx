@@ -79,7 +79,7 @@ interface ExtractedData {
   id: string;
   files: File[];
   fileUrls?: string[];
-  data: Record<string, string | null>;
+  data: Record<string, string>;
   status: 'pending' | 'processing' | 'success' | 'error';
   error?: string;
 }
@@ -931,6 +931,7 @@ function ExtratorAppContent() {
 
   const confirmDeleteRow = async () => {
     if (deleteConfirmation !== null && user) {
+      const supabase = getSupabase();
       const index = deleteConfirmation.index;
       const rowToDelete = csvData[index];
       const rowId = rowToDelete._id;
@@ -961,6 +962,7 @@ function ExtratorAppContent() {
 
   const confirmDeleteNormativoRow = async () => {
     if (normativosDeleteConfirmation !== null && user) {
+      const supabase = getSupabase();
       const index = normativosDeleteConfirmation.index;
       const rowToDelete = normativosData[index];
       const rowId = rowToDelete._id;
@@ -1100,6 +1102,7 @@ function ExtratorAppContent() {
 
   const saveEditedRow = async () => {
     if (editingRowIndex !== null && user) {
+      const supabase = getSupabase();
       const rowId = csvData[editingRowIndex]._id;
       const updatedData = { ...editingRowData };
       delete updatedData._id;
@@ -1747,7 +1750,7 @@ function ExtratorAppContent() {
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <div className="text-right mr-4 hidden md:block">
-            <p className="text-sm font-medium text-slate-900">{user.displayName}</p>
+            <p className="text-sm font-medium text-slate-900">{user.email?.split('@')[0] || 'Usuário'}</p>
             <p className="text-xs text-slate-500">{user.email}</p>
           </div>
           <Button 
@@ -2000,7 +2003,7 @@ function ExtratorAppContent() {
                         </div>
                       </div>
 
-                      {extraction.status === 'success' && (
+                      {(extraction.status === 'success' || extraction.status === 'processing') && (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {(extractionType === 'processo' ? columns : Object.keys(extraction.data).filter(k => k !== '_id')).map(col => (
@@ -3146,13 +3149,13 @@ function ExtratorAppContent() {
           <div className="space-y-2 py-4">
             {(() => {
               const row = csvData.find(r => r._id === viewingFilesRowId) || normativosData.find(r => r._id === viewingFilesRowId);
-              const fileUrls = row?._fileUrls || [];
+              const fileUrls = (row?._fileUrls as unknown as string[]) || [];
               
               if (fileUrls.length === 0) {
                 return <p className="text-sm text-slate-500 text-center">Nenhum arquivo armazenado para este registro.</p>;
               }
 
-              return fileUrls.map((url, idx) => {
+              return fileUrls.map((url: string, idx: number) => {
                 // Try to extract filename from URL or use a default
                 let fileName = "Documento";
                 try {
