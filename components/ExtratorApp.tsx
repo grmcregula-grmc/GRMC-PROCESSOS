@@ -843,10 +843,12 @@ function ExtratorAppContent() {
       toast.success('Dados adicionados ao controle!');
       // Force refresh of data from Supabase
       setRefreshTrigger(prev => prev + 1);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error saving to Supabase:', error);
       handleSupabaseError(error, OperationType.WRITE, extractionType === 'normativo' ? 'normativos' : 'processes', user);
-      setExtractedFiles(prev => prev.map(f => f.id === extractionId ? { ...f, status: 'error', error: 'Erro ao salvar no banco de dados.' } : f));
+      
+      const errorMessage = error?.message || 'Erro desconhecido ao salvar no banco de dados.';
+      setExtractedFiles(prev => prev.map(f => f.id === extractionId ? { ...f, status: 'error', error: `Erro: ${errorMessage}` } : f));
     }
   };
 
